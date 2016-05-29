@@ -3,24 +3,170 @@
 <head>
 	<meta charset="UTF-8">
 	<title>index</title>
-	<link rel="stylesheet" href="styles/layout.css" type="text/css">
-	<link rel="stylesheet" href="styles/neat.css" type="text/css">
-
-</head>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" href="styles/main.css" type="text/css"></head>
+	<link rel="stylesheet" href="styles/font-awesome.css" type="text/css"></head>
 <body>
-	<section class="buttons">
-		<div class="container">
-		<a href="css.html" class="btn btn-2">CSS
-		<span class="line line_top"></span>
-		<span class="line line_right"></span>
-		<span class="line line_bottom"></span>
-		<span class="line line_left"></span></a>
-		<a href="#" class="btn btn-3">JAVASCRIPT</a>
-		<a href="canvas.html" class="btn btn-4"><span>CANVAS</span></a>
-		<a href="#" class="btn btn-5">LAYOUT</a>
-		</div>
-    </section>
-    <canvas id="cavnas"></canvas>
-	<script src="script/script.js"></script>
+	<section id="sidebar">
+		<nav>
+			<ul>
+				<li>
+					<a href="#">Css</a>
+				</li>
+				<li>
+					<a href="#">Canvas</a>
+				</li>
+				<li>
+					<a href="#">Javascript</a>
+				</li>
+				<li>
+					<a href="#">Svg</a>
+				</li>
+				<li>
+					<a href="#">Layout</a>
+				</li>
+			</ul>
+			<div id="arrow"></div>
+		</nav>
+	</section>
+	<div id="container">
+		<nav class="menu">
+			<ul>
+				<li class="active"></li>
+				<li></li>
+				<li></li>
+				<li></li>
+				<li></li>
+			</ul>
+		</nav>
+		<section class="column-one">
+			<div class="wrapper">
+				<div class="ih-item circle effect1">
+					<a href="css.html">
+						<div class="spinner"></div>
+						<div class="img"> <i class="fa fa-tags fa-5x" aria-hidden="true"></i>
+						</div>
+						<div class="info">
+							<div class="info-back">
+								<h3>Click here</h3>
+								<p>学写的Css3例子</p>
+							</div>
+						</div>
+					</a>
+
+				</div>
+
+				<div class="text">
+					<h2>Css</h2>
+					<p>
+					曾经以为css只是简单的一些属性，但当了解了css3之后才知道自己知道的只是冰山一角。人懂得越多越知道自己的无知。
+					</p>
+				</div>
+			</div>
+		</section>
+		<section class="column-two ss-style-doublediagonal">
+			<div class="wrapper">
+				<div class="ih-item circle effect2">
+					<a href="canvas.html">
+						<div class="img"> <i class="fa fa-tachometer fa-5x" aria-hidden="true"></i>
+						</div>
+						<div class="info">
+							<div class="info-back">
+								<h3>Click here</h3>
+								<p>学写的Canvas例子</p>
+							</div>
+						</div>
+					</a>
+
+				</div>
+
+				<div class="text">
+					<h2>Canvas</h2>
+					<p>
+					Canvas绘制图形，制作小游戏，写好canvas,运用好javascript很关键。
+					</p>
+				</div>
+			</div>
+		</section>
+		<section class="column-three ss-style-zigzag">
+			<div class="wrapper">
+				<div class="ih-item circle effect3">
+					<a href="javascript.html">
+						<div class="img">
+							<i class="fa fa-terminal  fa-5x" aria-hidden="true"></i>
+
+						</div>
+						<div class="info">
+							<div class="info-back">
+								<h3>Click here</h3>
+								<p>学写的js例子</p>
+							</div>
+						</div>
+					</a>
+
+				</div>
+
+				<div class="text">
+					<h2>Javascript</h2>
+					<p>
+						只有不断的练习，才能征服js这座大山。
+					</p>
+				</div>
+			</div>
+		</section>
+		<section class="column-four ss-style-inczigzag">
+			<div class="wrapper">
+				<div class="ih-item circle effect4">
+					<a href="svg.html">
+						<div class="img">
+							<i class="fa fa-paper-plane fa-5x" aria-hidden="true"></i>
+
+						</div>
+						<div class="info">
+							<div class="info-back">
+								<h3>Click here</h3>
+								<p>学写的svg例子</p>
+							</div>
+						</div>
+					</a>
+
+				</div>
+
+				<div class="text">
+					<h2>Svg</h2>
+					<p>
+						
+					</p>
+				</div>
+			</div>
+		</section>
+		<section class="column-five ss-style-castle">
+			<div class="wrapper">
+				<div class="ih-item circle effect5">
+					<a href="layout.html">
+						<div class="img">
+							<i class="fa fa-file-image-o fa-5x" aria-hidden="true"></i>
+
+						</div>
+						<div class="info">
+							<div class="info-back">
+								<h3>Click here</h3>
+								<p>综合例子</p>
+							</div>
+						</div>
+					</a>
+
+				</div>
+
+				<div class="text">
+					<h2>Layout</h2>
+					<p>
+						网页布局综合练习
+					</p>
+				</div>
+			</div>
+		</section>
+	</div>
+	<script src="script/script.js" type="text/javascript" charset="utf-8" async defer></script>
 </body>
 </html>

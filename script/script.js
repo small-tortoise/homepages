@@ -1,92 +1,209 @@
-var canvas = document.getElementById("cavnas");
-var ctx = canvas.getContext("2d");
+window.onload = function() {
+	var oSidebar = getId('sidebar');
+	var oLi = oSidebar.getElementsByTagName('li');
+	var oArrow = getId('arrow');
+	var oContainer = getId('container');
+	var oSection = oContainer.getElementsByTagName('section');
+	var oMenu = getByClass(oContainer, 'menu');
+	var oMli = oContainer.getElementsByTagName('li');
+	var iNow = 0;
+	var iContentHeight = 0;
+	var oSpinner = getByClass(oContainer, 'spinner');
+	var oinfo = getByClass(oContainer, 'info');
+	var oImg = getByClass(oContainer, 'img');
+	var oinfoback = getByClass(oContainer, 'info-back');
 
+	bindNav();
+	contentAuto();
+	mouseWheel();
 
-
-function resize() {
-	canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-	canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-}
-
-resize();
-
-var RAF = (function() {
-	return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame ||
-		window.msRequestAnimationFrame || function(callback) {
-			window.setTimeout(callback, 1000 / 60);
-		};
-})();
-//获取鼠标坐标
-var warea = {
-	x: null,
-	y: null,
-	max: 20000
-};
-window.onmousemove = function(e) {
-	e = e || window.event;
-	warea.x = e.clientX;
-	warea.y = e.clientY;
-}
-window.onmouseout = function(e) {
-		warea.x = null;
-		warea.y = null;
-	}
-	// 添加粒子
-	// x，y为粒子坐标，xa, ya为粒子xy轴加速度，max为连线的最大距离
-var dots = [];
-for (var i = 0; i < 50; i++) {
-	var x = Math.random() * canvas.width;
-	var y = Math.random() * canvas.height;
-	var xa = Math.random() * 2 - 1;
-	var ya = Math.random() * 2 - 1;
-	dots.push({
-		x: x,
-		y: y,
-		xa: xa,
-		ya: ya,
-		max: 6000
-	})
-}
-setTimeout(function() {
-	animate();
-}, 100)
-
-function animate() {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	var ndots = [warea].concat(dots);
-	dots.forEach(function(dot) {
-		dot.x += dot.xa * 0.8;
-		dot.y += dot.ya * 0.8;
-		dot.xa *= (dot.x > canvas.width || dot.x < 0) ? -1 : 1;
-		dot.ya *= (dot.y > canvas.height || dot.y < 0) ? -1 : 1;
-		ctx.fillStyle = "rgba(255,255,255,0.6)";
-		ctx.beginPath();
-		ctx.arc(dot.x - 1, dot.y - 1, 3,0,Math.PI * 2);
-		ctx.closePath();
-		ctx.fill();
-		
-		for (var i = 0; i < ndots.length; i++) {
-			var d2 = ndots[i];
-			if (dot === d2 || d2.x === null || d2.y === null) continue;
-			var xc = dot.x - d2.x;
-			var yc = dot.y - d2.y;
-			var dis = xc * xc + yc * yc;
-			var radio;
-			if (dis < d2.max) {
-				if (d2 === warea && dis > (d2.max / 2)) {
-					dot.x -= xc * 0.03;
-					dot.y -= yc * 0.03;
-				}
-				radio = (d2.max - dis) / d2.max;
-				ctx.beginPath();
-				ctx.lineWidth = radio / 2;
-				ctx.strokeStyle = "rgba(255,255,255," + (radio + 0.2) + ")";
-				ctx.moveTo(dot.x, dot.y);
-				ctx.lineTo(d2.x, d2.y);
-				ctx.stroke();
+	function bindNav() {
+		oArrow.style.left = oLi[0].offsetLeft + oLi[0].offsetWidth / 2 - oArrow.offsetWidth / 2 + 'px';
+		for (var i = 0; i < oLi.length; i++) {
+			oLi[i].index = i;
+			oLi[i].onmousedown = function() {
+				prevIndex = iNow;
+				iNow = this.index;
+				toMove(this.index);
+			};
+		}
+		for (var i = 0; i < oMli.length; i++) {
+			oMli[i].index = i;
+			oMli[i].onclick = function() {
+				prevIndex = iNow;
+				iNow = this.index;
+				toMove(this.index);
 			}
 		}
-		ndots.splice(ndots.indexOf(dot), 1);
-	});
-	RAF(animate);
+	}
+
+	function toMove(index) {
+		oArrow.style.left = oLi[index].offsetLeft + oLi[index].offsetWidth / 2 - oArrow.offsetWidth / 2 + 'px';
+		oContainer.style.top = -index * iContentHeight + 'px';
+		for (var i = 0; i < oMli.length; i++) {
+			oMli[i].className = '';
+		}
+		oMli[index].className = 'active';
+		if( cjAnimate[index].inAn ){
+			cjAnimate[index].outAn();
+		}
+		if( cjAnimate[prevIndex].outAn ){
+			cjAnimate[prevIndex].inAn();
+		}
+
+	}
+
+	function mouseWheel() {
+		var mouseBtn = true;
+		var timer = null;
+		if (oContainer.addEventListener) {
+			oContainer.addEventListener('DOMMouseScroll', function(event) {
+				var event = event || window.event;
+				clearTimeout(timer);
+				timer = setTimeout(function() {
+					toChange(event);
+				}, 200)
+			}, false)
+		}
+		oContainer.onmousewheel = function(event) {
+			var event = event || window.event;
+			clearTimeout(timer);
+			timer = setTimeout(function() {
+				toChange(event);
+			}, 200)
+		}
+
+		function toChange(event) {
+			if (event.detail) {
+				mouseBtn = event.detail > 0 ? true : false;
+			} else {
+				mouseBtn = event.wheelDelta < 0 ? true : false;
+			}
+			if ((iNow == 0 && !mouseBtn) || (iNow == oMli.length - 1 && mouseBtn)) {
+				return
+			}
+			prevIndex = iNow;
+			if (mouseBtn) {
+				if (iNow != oMli.length - 1) {
+					iNow++;
+				}
+				toMove(iNow);
+			} else {
+				if (iNow != 0) {
+					iNow--;
+				}
+				toMove(iNow);
+			}
+			if (event.preventDefault) {
+				event.preventDefault();
+			} else {
+				return false;
+			}
+		}
+
+
+	}
+
+	function contentAuto() {
+		iContentHeight = viewWidth();
+		oContainer.style.height = iContentHeight + 'px';
+		for (var i = 0; i < oSection.length; i++) {
+			oSection[i].style.height = iContentHeight + 'px';
+		}
+	}
+
+	function viewWidth() {
+		return window.innerHeight || document.documentElement.clientHeight;
+	}
+
+	function getId(id) {
+		return document.getElementById(id);
+	}
+
+	function getByClass(parent, classname) {
+		var elements = parent.getElementsByTagName('*');
+		var arr = [];
+		for (var i = 0; i < elements.length; i++) {
+			if (elements[i].className == classname) {
+				arr.push(elements[i]);
+			}
+		}
+		return arr;
+	}
+
+	
+	var cjAnimate = [{
+		inAn: function() {
+			var oinfo = getByClass(oContainer, 'info')[0];
+			var oSpinner = getByClass(oContainer, 'spinner')[0];
+			setStyle(oSpinner,'transform','rotate(0deg)');
+			oinfo.style.opacity = 0;
+		},
+		outAn: function() {
+			var oinfo = getByClass(oContainer, 'info')[0];
+			var oSpinner = getByClass(oContainer, 'spinner')[0];
+			setStyle(oSpinner,'transform','rotate(180deg)');
+			oinfo.style.opacity = 1;
+		}
+	}, {
+		inAn: function() {
+			var oImg =  getByClass(oContainer, 'img')[1];
+			var oinfo = getByClass(oContainer, 'info')[1];
+			setStyle( oImg,'transform','scale(1) translateX(0)');
+			setStyle( oinfo,'transform','translateX(-100%)');
+			oinfo.style.opacity = 0;
+		},
+		outAn: function() {
+			var oImg =  getByClass(oContainer, 'img')[1];
+			var oinfo = getByClass(oContainer, 'info')[1];
+			setStyle(oImg,'transform','scale(0.5) translateX(100%)');
+			setStyle(oinfo,'transform','translateX(0)');
+			oinfo.style.opacity = 1;
+		}
+	}, {
+		inAn: function() {
+			var oImg =  getByClass(oContainer, 'img')[2];
+			setStyle(oImg, 'transform', 'rotate(0deg)');
+		},
+		outAn: function() {
+			var oImg =  getByClass(oContainer, 'img')[2];
+			setStyle(oImg, 'transform', 'rotate(120deg)');
+		}
+	}, {
+		inAn: function() {
+			var oImg =  getByClass(oContainer, 'img')[3];
+			setStyle(oImg, 'transform', 'rotate3d(0, 0, 0, 0deg)');
+		},
+		outAn: function() {
+			var oImg =  getByClass(oContainer, 'img')[3];
+			setStyle(oImg, 'transform', 'rotate3d(0, 1, 0, 180deg)');
+		}
+	}, {
+		inAn: function() {
+			var oImg =  getByClass(oContainer, 'img')[4];
+			var oinfoback = getByClass(oContainer, 'info-back')[4];
+			setStyle(oImg, 'transform', 'translate3d(0,0,0) rotate3d(0,0,0,0deg)');
+			setStyle(oinfoback, 'transform', 'translate3d(0,0,-220px) rotate3d(1,0,0,90deg)');
+			oImg.style.opacity = 1;
+			oinfoback.style.visibility = 'hidden';
+		},
+		outAn: function() {
+			var oImg =  getByClass(oContainer, 'img')[4];
+			var oinfoback = getByClass(oContainer, 'info-back')[4];
+			setStyle(oImg, 'transform', 'translate3d(0,280px,0) rotate3d(1,0,0,-90deg)');
+			setStyle(oinfoback, 'transform', 'rotate3d(1,0,0,0deg)');
+			oinfoback.style.visibility = 'visible';
+			oImg.style.opacity = 0;
+		}
+	}];
+
+	for(var i=0;i<cjAnimate.length;i++){
+		cjAnimate[i].inAn();
+	}
+	cjAnimate[0].outAn();
+
+	function setStyle(obj,attr,value){
+		obj.style[attr] = value;
+		obj.style['webkit'+attr.substring(0,1).toUpperCase() + attr.substring(1)] = value;
+	}
 }
